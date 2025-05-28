@@ -28,7 +28,7 @@ import (
     "log"
     "time"
 
-    "github.com/Yuni-sa/spacetime-go-sdk/client"
+    "github.com/Yuni-sa/spacetimedb-go-sdk/client"
 )
 
 func main() {
@@ -100,6 +100,7 @@ if err != nil {
 authToken, err := client.NewAuthToken(
     client.WithAuthConfigFolder(".my_app"),
     client.WithAuthConfigFile("my_app_settings.ini"),
+    client.WithAuthConfigRoot("/custom/root/path"),
 )
 if err != nil {
     log.Fatal(err)
@@ -108,8 +109,8 @@ if err != nil {
 // Get existing token
 token := authToken.GetToken()
 
-// Save a new token
-err = authToken.SaveToken("new_token_here")
+// Save a new token to file
+err = authToken.SaveToken(token)
 if err != nil {
     log.Fatal(err)
 }
@@ -126,14 +127,7 @@ if err != nil {
 defer wsConn.Close()
 
 // Subscribe to tables
-subscribeMsg := map[string]any{
-    "Subscribe": map[string]any{
-        "query_strings": []string{"SELECT * FROM my_table"},
-        "request_id":    1,
-    },
-}
-
-err = wsConn.SendMessage(subscribeMsg)
+err = wsConn.SendSubscribe([]string{"SELECT * FROM my_table"}, 1)
 if err != nil {
     log.Fatal("Failed to subscribe:", err)
 }
@@ -185,7 +179,7 @@ go run ./examples/quickstart-chat/client/main.go --client 2
 ```go
 client, err := client.NewClientBuilder().
     WithBaseURL("http://localhost:3000").
-    WithToken("your-jwt-token").
+    WithToken("your-auth-token").
     WithIdentity("your-identity").
     WithTimeout(30 * time.Second).
     Build()
@@ -221,6 +215,16 @@ client, err := client.NewClientBuilder().
 - `SendMessage(message)` - Send WebSocket message
 - `ReceiveMessage()` - Receive WebSocket message
 - `Close()` - Close connection
+- `GracefulClose()` - Gracefully close connection with proper handshake
+- `SendSubscribe(queries, requestID)` - Send subscription request for multiple queries
+- `SendCallReducer(reducerName, args, requestID)` - Send reducer call request
+- `SendOneOffQuery(messageID, queryString)` - Send one-off query request
+- `SendSubscribeSingle(query, requestID, queryID)` - Subscribe to single query with ID
+- `SendSubscribeMulti(queries, requestID, queryID)` - Subscribe to multiple queries with ID
+- `SendUnsubscribe(requestID, queryID)` - Unsubscribe from single query
+- `SendUnsubscribeMulti(requestID, queryID)` - Unsubscribe from multiple queries
+- `SendSubscribeAll(requestID)` - Subscribe to all tables
+
 
 
 ## Protocol Support
@@ -237,17 +241,17 @@ client, err := client.NewClientBuilder().
 
 This SDK is actively being developed with the following goals:
 
-- [] **Complete HTTP API Coverage** - All SpacetimeDB HTTP endpoints
-- [] **WebSocket Support** - Real-time database subscriptions
-- [] **SATS Type System** - Full SpacetimeDB Algebraic Type System support
-- [] **Authentication Management** - Token persistence and management
-- [] **BSATN Protocol Support** - Binary encoding for better performance
-- [] **Enhanced WebSocket Features** - Better message handling and functions
-- [] **Comprehensive Test Coverage** - More robust testing across all features
-- [] **Improved Project Structure** - Better organization as the project grows
-- [] **Documentation** - More examples and detailed API documentation
-- [] **Performance Optimizations** - Connection pooling, caching, etc.
-- [] **Code Generation** - Module Bindings and ClientAPI
+- [ ] **Complete HTTP API Coverage** - All SpacetimeDB HTTP endpoints
+- [ ] **WebSocket Support** - Real-time database subscriptions
+- [ ] **SATS Type System** - Full SpacetimeDB Algebraic Type System support
+- [ ] **Authentication Management** - Token persistence and management
+- [ ] **BSATN Protocol Support** - Binary encoding for better performance
+- [ ] **Enhanced WebSocket Features** - Better message handling and functions
+- [ ] **Comprehensive Test Coverage** - More robust testing across all features
+- [ ] **Improved Project Structure** - Better organization as the project grows
+- [ ] **Documentation** - More examples and detailed API documentation
+- [ ] **Performance Optimizations** - Connection pooling, caching, etc.
+- [ ] **Code Generation** - Module Bindings and ClientAPI
 
 ## Examples
 
