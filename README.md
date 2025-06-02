@@ -252,6 +252,7 @@ This SDK is actively being developed with the following goals:
 - [ ] **Documentation** - More examples and detailed API documentation
 - [ ] **Performance Optimizations** - Connection pooling, caching, etc.
 - [ ] **Code Generation** - Module Bindings and ClientAPI
+- [ ] **Go Context Support** - Add context.Context support for cancellation, timeouts, and request tracing
 
 ## Examples
 
